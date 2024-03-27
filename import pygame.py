@@ -15,6 +15,13 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 exit = False
 
+# 소수좌표를 정수좌표로 바꿔주는 코드
+def tup_r(tup):
+    temp_list = []
+    for a in tup:
+        temp_list:append(round(a))
+    return tuple(temp_list)
+
 # 4. 메인 이벤트
 while not exit:
 # 4-1. FPS 설정
@@ -26,6 +33,10 @@ while not exit:
 # 4-3. 입력, 시간에 따른 변화
 # 4-4. 그리기
         screen.fill(white)
+        A = tup_r((0,size[1]*2/3))
+        B = (size[0], A[1])
+        C = tup_r((size[0]/6, A[1]))
+        D = (C[0], C[0])
 # 4-5. 업데이트
         pygame.display.flip()
 # 5. 게임종료
