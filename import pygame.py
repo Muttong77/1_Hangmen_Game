@@ -37,6 +37,13 @@ while not exit:
         B = (size[0], A[1])
         C = tup_r((size[0]/6, A[1]))
         D = (C[0], C[0])
+        E = tup_r((size[0]/2,D[1]))
+        pygame.draw.line(screen, black, A, B,3)
+        pygame.draw.line(screen, black, C, D,3)
+        pygame.draw.line(screen, black, D, E,3)
+        
+        
+        
 # 4-5. 업데이트
         pygame.display.flip()
 # 5. 게임종료
