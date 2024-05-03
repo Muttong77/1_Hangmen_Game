@@ -1,15 +1,24 @@
 import pygame, math
 
+# 1. 게임 초기화
 pygame.init()
-
-size = [500, 900]
+# 2. 게임창 옵션 설정
+size =[500, 900]
 screen = pygame.display.set_mode(size)
-title = "HANG_MEN"
+title = "HANGMAN"
 pygame.display.set_caption(title)
-
+# 3. 게임 내 필요한 설정
 clock = pygame.time.Clock()
 black = (0,0,0)
-write = (255,255,255)
+white = (255,255,255)
+Red = (255, 0, 0)
+hint_font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 80)
+entry_font = pygame.font.Font("C:/Windows/Fonts/arial.ttf", 30)
+try_number = 0
+entry_text = " "
+word = "cat"
+word_list = list(word)
+n=3
 
 def tup_r(tup):
     temp_list = []
@@ -17,26 +26,111 @@ def tup_r(tup):
         temp_list.append(round(a))
     return tuple(temp_list)
 
+drop = False    
 exit = False
+k=0
+
+# 4. 메인 이벤트
 while not exit:
+#4-1. FPS 설정
     clock.tick(45)
+#4-2. 각종 입력 감지
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            exit = True
+            exit =True
+        if event.type == pygame.KEYDOWN:
+            key_name = pygame.key.name(event.key)
+            entry_text = key_name
+            if key_name == word_list[n]:
+                entry_text = word_list[n]
+                n=n+1
+            if key_name != word_list[n]:
+                if key_name != word_list[n+1]:
+                    if key_name != word_list[n+1]:
+                        try_number += 12
+#4-3. 입력, 시간에 따른 변화
+    k=k+1
+#4-4. 그리기
     screen.fill(black)
-    r_head = round(size[0]/12)
-    Arm = r_head*2
-    A = tup_r((0, size[1]*2/3))
-    B = (size[0], A[1])
-    C = tup_r((size[0]/6, A[1]))
-    D = (C[0], C[0])
-    E = tup_r((size[0]/2, D[1]))
-    F = tup_r((E[0], E[1]+size[0]/6))
-    G = (F[0], F[1] + r_head)
-    H = (G[0], G[1] + r_head)
-    I = (H[0], H[1] + r_head/2)
-    J = (I[0]-Arm*math.cos(45*math.pi/180))
+    A=tup_r((0,size[1]*2/3))
+    B=(size[0], A[1])
+    C=tup_r((size[0]/6, A[1]))
+    D=(C[0],C[0])
+    E=tup_r((size[0]/2,D[1]))
+    F=tup_r((E[0], E[1]+size[0]/6))
+    pygame.draw.line(screen, white, A,B,3)
+    pygame.draw.line(screen, white, C,D,3)
+    pygame.draw.line(screen, white, D,E,3)
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^단두대
     
+    if drop == False:
+        pygame.draw.line(screen, white, E, F, 3)
+        r_head=round(size[0]/12)
+    if drop == True:
+        G=(F[0],F[1]+r_head+k*5)
+    else:
+        G=(F[0],F[1]+r_head)
+    H=(G[0], G[1]+r_head)
+    I=(H[0], H[1]+r_head/2)
+    I_arm=r_head*2
+    J=(I[0]-I_arm*math.cos(45*math.pi/180), I[1]+I_arm*math.sin(45*math.pi/180))
+    J=tup_r(J)
+    K=(I[0]+I_arm*math.cos(45*math.pi/180), I[1]+I_arm*math.sin(45*math.pi/180))
+    K=tup_r(K)
+    L=(I[0], I[1]+I_arm)
+    L_leg=r_head*2
+    N=(L[0]-L_leg*math.cos(45*math.pi/180), L[1]+L_leg*math.sin(45*math.pi/180))
+    N=tup_r(N)
+    M=(L[0]+L_leg*math.cos(45*math.pi/180), L[1]+L_leg*math.sin(45*math.pi/180))
+    M=tup_r(M)
+    
+    if try_number == 1:
+        pygame.draw.circle(screen,white, G, r_head, 3)
+    if try_number == 2:
+        pygame.draw.line(screen, white, H, I, 3)
+    if try_number == 3:
+        pygame.draw.line(screen, white, I, L, 3) 
+    if try_number == 4: 
+        pygame.draw.line(screen, white, I, J, 3)
+    if try_number == 5:
+        pygame.draw.line(screen, white, I, K, 3)
+    if try_number == 6:
+        pygame.draw.line(screen, white, L, N, 3)
+    if try_number == 7:
+        pygame.draw.line(screen, white, L, M, 3)
+    ###################################################################################### 5/1일
+    if drop == False and try_number == 8:
+        O=tup_r((size[0]/2-size[0]/6, E[1]/2+F[1]/2))
+        P=(O[0]+k*2, O[1])
+        if P[0]>size[0]/2+size[0]/6:
+            drop = True
+            k=0
+        pygame.draw.line(screen, Red, O, P, 3)
+        
+    # 힌트 표시하기
+    word_show=("_ "* n)
+    hint = hint_font.render(word_show, True, white)
+    hint_size = hint.get_size()
+    hint_pos = tup_r((size[0]/2 - hint_size[0]/2, size[1]*5/6 - hint_size[1]/2))
+    screen.blit(hint, hint_pos)
+    
+    # 입력창 표시하기
+    entry = entry_font.render(entry_text, True, black)
+    entry_size = entry.get_size()
+    entry_pos = tup_r((size[0]/2 - entry_size[0]/2, size [1]*17/18 - entry_size[1]/2))
+    entry_bg_size = 80
+    pygame.draw.rect(screen, white, (size[0]/2 -entry_bg_size/2, size[1]*17.5/18 - entry_bg_size/2, entry_bg_size, entry_bg_size))
+    screen.blit(entry, entry_pos)
+    
+    
+    #
+    
+    
+    
+    #4-5. 업데이트
+    pygame.display.flip()
+#5.게임종료
+pygame.quit()
 
 
 
